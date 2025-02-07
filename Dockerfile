@@ -12,4 +12,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install discord.py
 
 # Run the bot
-CMD ["python", "bot3.py"]
+CMD ["python", "bot.py"]
