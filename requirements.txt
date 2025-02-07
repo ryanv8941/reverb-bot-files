@@ -2,3 +2,4 @@ discord.py
 python-dotenv  # If you're using .env files for secrets
 aiohttp        # If your bot makes HTTP requests
 asyncio        # For async support
+requests

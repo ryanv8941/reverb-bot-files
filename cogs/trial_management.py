@@ -33,7 +33,7 @@ class TrialManagement(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    print('RYAN BOT WORK')
+    #print('RYAN BOT WORK')
 
     @app_commands.command(name="updatewelcomemessage", description="Update the welcome message for trial threads.")  # Use app_commands
     @app_commands.checks.has_permissions(administrator=True)  # Check for admin permissions

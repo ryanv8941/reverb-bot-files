@@ -7,7 +7,6 @@ import json
 #load_dotenv()
 #TOKEN = os.getenv("DISCORD_TOKEN")
 
-#load_dotenv()
 TOKEN = "MTMzNjczODI1NTIxNDczOTQ2Nw.Gy5cmi.HJBvPBDuFxhuF99vanJvKhKy7DjgiQy1bmtlOs"
 
 # Set up intents. We need members intent to get role updates.
@@ -21,11 +20,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 async def on_ready():
     await bot.change_presence(status=discord.Status.online, activity=discord.Game("Managing trials"))
     print(f'Logged in as {bot.user} (ID: {bot.user.id})')
-    try:
-        await bot.tree.sync()  # Force sync application commands
-        print("Slash commands synced successfully.")
-    except Exception as e:
-        print(f"Failed to sync commands: {e}")
+   
 
     try:
         for filename in os.listdir("./cogs"):
@@ -33,5 +28,11 @@ async def on_ready():
                 await bot.load_extension(f"cogs.{filename[:-3]}")
     except Exception as l:
         print(f'RYAN EXCEPTON NO FILE: {l}')
+
+    try:
+        await bot.tree.sync()  # Force sync application commands
+        print("Slash commands synced successfully.")
+    except Exception as e:
+        print(f"Failed to sync commands: {e}")
 
 bot.run(TOKEN)
