@@ -2,12 +2,12 @@ import discord
 from discord.ext import commands
 import os
 import json
+from dotenv import load_dotenv
 
-#from dotenv import load_dotenv
-#load_dotenv()
-#TOKEN = os.getenv("DISCORD_TOKEN")
+load_dotenv()
+TOKEN = os.getenv("DISCORD_TOKEN")
 
-TOKEN = "MTMzNjczODI1NTIxNDczOTQ2Nw.Gy5cmi.HJBvPBDuFxhuF99vanJvKhKy7DjgiQy1bmtlOs"
+
 
 # Set up intents. We need members intent to get role updates.
 intents = discord.Intents.default()
