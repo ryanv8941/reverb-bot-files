@@ -8,4 +8,4 @@ services:
     volumes:
       - ./bot_data.json:/app/bot_data.json  # Persist bot data
     environment:
-      - DISCORD_TOKEN=youMTMzNjczODI1NTIxNDczOTQ2Nw.Gy5cmi.HJBvPBDuFxhuF99vanJvKhKy7DjgiQy1bmtlOs  # Store in Unraid instead of hardcoding
+      - DISCORD_TOKEN=${DISCORD_TOKEN} # Store in Unraid instead of hardcoding
