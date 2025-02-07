@@ -27,8 +27,11 @@ async def on_ready():
     except Exception as e:
         print(f"Failed to sync commands: {e}")
 
-for filename in os.listdir("./cogs"):
-    if filename.endswith(".py"):
-        bot.load_extension(f"cogs.{filename[:-3]}")
+    try:
+        for filename in os.listdir("./cogs"):
+            if filename.endswith(".py"):
+                await bot.load_extension(f"cogs.{filename[:-3]}")
+    except Exception as l:
+        print(f'RYAN EXCEPTON NO FILE: {l}')
 
 bot.run(TOKEN)

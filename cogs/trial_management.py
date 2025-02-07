@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord import app_commands
 import os
 import json
 
@@ -28,14 +29,15 @@ bot_data = load_data()
 trial_threads = bot_data["trial_threads"]
 welcome_message = bot_data["welcome_message"]
 
-class TrialManagement(commands.cog):
+class TrialManagement(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
     print('RYAN BOT WORK')
 
-    @commands.tree.command(name="updatewelcomemessage", description="Update the welcome message for trial threads.")
-    async def update_welcome_message(interaction: discord.Interaction, new_message: str):
+    @app_commands.command(name="updatewelcomemessage", description="Update the welcome message for trial threads.")  # Use app_commands
+    @app_commands.checks.has_permissions(administrator=True)  # Check for admin permissions
+    async def update_welcome_message(self, interaction: discord.Interaction, new_message: str):
         """Allows an admin to update the welcome message dynamically."""
         if not interaction.user.guild_permissions.administrator:
             await interaction.response.send_message("You do not have permission to use this command.", ephemeral=True)
@@ -122,6 +124,6 @@ class TrialManagement(commands.cog):
             trial_threads.pop(str(after.id), None)
             save_data()
 
-def setup(bot):
-    bot.add_cog(TrialManagement(bot))
+async def setup(bot):
+    await bot.add_cog(TrialManagement(bot))
 
