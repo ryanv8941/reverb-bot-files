@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -y \
 
 # Install Playwright and its dependencies
 RUN pip install --upgrade pip
-RUN pip install playwright==1.21.0
+RUN pip install playwright
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
