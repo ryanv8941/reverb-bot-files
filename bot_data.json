@@ -1,1 +1,15 @@
-{"trial_threads": {"197874629929336832": 1340753479458885782, "182022446675656704": 1341617644981456907, "229698475472715778": 1345795221237006448, "1136831220303536230": 1346283277870301224, "695412052604354622": 1348137108958871563, "964183784574574662": 1348383175377817740, "776629867235246121": 1348829475017723946, "348173436247474186": 1349449636569415822, "425831176251637770": 1350181981693939855}, "welcome_message": "# Welcome to your trial thread, {mention}!\n- This thread exists as a way to privately chat with <@&1291413329751048243> about any concerns, suggestions, issues, or comments you might have during your trial.\n- This thread will also be used to provide feedback on your trial\n- You can view the overview of requirements and expectations of your trial here: https://discord.com/channels/1291413329444737096/1294140302663225439/1294142408455487522", "expansion_id": 10}
+{
+    "trial_threads": {
+        "197874629929336832": 1340753479458885782,
+        "182022446675656704": 1341617644981456907,
+        "229698475472715778": 1345795221237006448,
+        "1136831220303536230": 1346283277870301224,
+        "695412052604354622": 1348137108958871563,
+        "964183784574574662": 1348383175377817740,
+        "776629867235246121": 1348829475017723946,
+        "348173436247474186": 1349449636569415822,
+        "425831176251637770": 1350181981693939855
+    },
+    "welcome_message": "# Welcome to your trial thread, {mention}!\n- This thread exists as a way to privately chat with <@&1291413329751048243> about any concerns, suggestions, issues, or comments you might have during your trial.\n- This thread will also be used to provide feedback on your trial\n- You can view the overview of requirements and expectations of your trial here: https://discord.com/channels/1291413329444737096/1294140302663225439/1294142408455487522",
+    "expansion_id": 10
+}
