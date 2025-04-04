@@ -27,6 +27,9 @@ RUN apt-get update && apt-get install -y \
 RUN pip install --upgrade pip
 RUN pip install playwright
 
+# Copy only the requirements file first to take advantage of Docker cache
+COPY requirements.txt .
+
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install discord.py
