@@ -120,7 +120,7 @@ class WowAuditSims(commands.Cog):
         #page.wait_for_selector("text=Job Status: Processing", timeout=15000)
         send_log(f"✅ {name} simulation queued...")
 
-        page.wait_for_selector("text=Boss Summary", timeout=300000)  # Wait up to 5 minutes
+        page.wait_for_selector("text=Boss Summary", timeout=900000)  # Wait up to 15 minutes
         rep_id = page.url.split("/")[-1]
         send_log(f"✅ Sim finished for {name} - Report ID: {rep_id}")
         print("Result URL:", page.url)
