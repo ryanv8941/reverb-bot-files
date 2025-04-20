@@ -11,18 +11,10 @@ BOT_DATA_FILE = "bot_data.json"
 
 
 class WeeklyRaidUpdater(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot, database):
         self.bot = bot
+        self.db = database
         self.update_raids_weekly.start()
-
-    def get_expansion_id(self):
-        """Retrieve the current expansion_id from bot_data.json."""
-        try:
-            with open(BOT_DATA_FILE, "r") as file:
-                data = json.load(file)
-                return data.get("expansion_id")
-        except (FileNotFoundError, json.JSONDecodeError):
-            return None
 
     @tasks.loop(hours=24)
     async def update_raids_weekly(self):
@@ -31,7 +23,7 @@ class WeeklyRaidUpdater(commands.Cog):
         if now.weekday() != 6:  # 6 = Sunday
             return
 
-        expansion_id = self.get_expansion_id()
+        expansion_id = await self.db.get_expansion_id()
         if not expansion_id:
             print("No expansion_id found in bot_data.json.")
             return
@@ -45,10 +37,14 @@ class WeeklyRaidUpdater(commands.Cog):
             print("Guild not found.")
             return
 
-        category = discord.utils.get(guild.categories, name="Raid Strats")
-        if not category:
-            print("Category 'Raid Strats' not found.")
-            return
+        raid_strats_category = discord.utils.get(guild.categories, name="Raid Strats")
+        archive_category = discord.utils.get(guild.categories, name="ARCHIVED")
+        existing_channels = []
+
+        if raid_strats_category:
+            existing_channels += raid_strats_category.text_channels
+        if archive_category:
+            existing_channels += archive_category.text_channels
         
 
         # Construct the URL with the provided expansion_id
@@ -58,7 +54,7 @@ class WeeklyRaidUpdater(commands.Cog):
         
         if response.status_code != 200:
             await mod_logs.send(
-                "Failed to fetch data from Raider.io API.", ephemeral=True
+                "Failed to fetch data from Raider.io API."
             )
             return
         raid_data = response.json()
@@ -68,7 +64,7 @@ class WeeklyRaidUpdater(commands.Cog):
         raids = raid_data.get("raids", [])
         if not raids:
             await mod_logs.send(
-                "No raids found for this expansion.", ephemeral=True
+                "No raids found for this expansion."
             )
             return
         
@@ -80,19 +76,19 @@ class WeeklyRaidUpdater(commands.Cog):
 
                 if not raid_name:
                     await mod_logs.send(
-                        "Raid name not found in the API response.", ephemeral=True
+                        "Raid name not found in the API response."
                     )
                     return
 
                 
-                existing_channel = discord.utils.get(category.text_channels, name=formatted_raid_name)
+                existing_channel = discord.utils.get(existing_channels, name=formatted_raid_name)
                 if existing_channel:
                     await mod_logs.send(
-                        f"A channel for raid '{raid_name}' already exists.", ephemeral=True
+                        f"A channel for raid '{raid_name}' already exists."
                     )
                     continue
 
-                new_channel = await guild.create_text_channel(raid_name, category=category)
+                new_channel = await guild.create_text_channel(raid_name, category=raid_strats_category)
                 print(f"Created new channel: {new_channel.name}")  # Debugging
 
                 # --- STEP 4: Create threads for each boss ---
@@ -153,4 +149,7 @@ class WeeklyRaidUpdater(commands.Cog):
         await self.bot.wait_until_ready()
 
 async def setup(bot):
+    from db import Database
+    database = Database()
+    await database.connect()
     await bot.add_cog(WeeklyRaidUpdater(bot))

@@ -3,37 +3,25 @@ from discord.ext import commands
 from discord import app_commands
 import os
 import json
+import asyncio
 
 # Customize these to match your server’s configuration.
 TRIAL_ROLE_NAME = "Trial Raider"
 TRIAL_CHANNEL_NAME = "trials"
-DATA_FILE = "bot_data.json"
 
-# Load bot data (including welcome message and trial threads)
-def load_data():
-    if os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "r") as f:
-            try:
-                return json.load(f)
-            except json.JSONDecodeError:
-                return {"trial_threads": {}, "welcome_message": "Welcome to your trial thread 1, {mention}!"}
-    return {"trial_threads": {}, "welcome_message": "Welcome to your trial thread 2, {mention}!"}
-
-# Save bot data
-def save_data():
-    with open(DATA_FILE, "w") as f:
-        json.dump(bot_data, f)
-
-# Load data
-bot_data = load_data()
-trial_threads = bot_data["trial_threads"]
-welcome_message = bot_data["welcome_message"]
+# OLD USED WHEN WE LOOKED AT JSON FILE welcome_message = bot_data["welcome_message"]
 
 class TrialManagement(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot, database):
         self.bot = bot
+        self.db = database
+        self.welcome_message = None
+        asyncio.create_task(self.load_welcome_message())
 
-    #print('RYAN BOT WORK')
+    async def load_welcome_message(self):
+        self.welcome_message = await self.db.get_welcome_message()
+
+    print('RYAN BOT WORK')
 
     @app_commands.command(name="updatewelcomemessage", description="Update the welcome message for trial threads.")  # Use app_commands
     @app_commands.checks.has_permissions(administrator=True)  # Check for admin permissions
@@ -43,11 +31,8 @@ class TrialManagement(commands.Cog):
             await interaction.response.send_message("You do not have permission to use this command.", ephemeral=True)
             return
         
-        global welcome_message
-        welcome_message = new_message  # Update the variable
-        bot_data["welcome_message"] = new_message  # Update the stored data
-        save_data()  # Save changes to file
-        
+        await self.db.set_welcome_message(new_message)
+        self.welcome_message = new_message
         await interaction.response.send_message(f"Welcome message updated to: `{new_message}`", ephemeral=True)
 
     @commands.Cog.listener()
@@ -69,6 +54,7 @@ class TrialManagement(commands.Cog):
                 # Create a private thread in the trials channel.
                 thread = await trials_channel.create_thread(
                     name=after.display_name,  # Using the user's display name as the thread name.
+                    auto_archive_duration=10080,
                     type=discord.ChannelType.private_thread,
                     reason="Creating trial thread for new Trial Raider"
                 )
@@ -78,7 +64,7 @@ class TrialManagement(commands.Cog):
                 # 3. Send a welcome message in the thread.
                 #welcome_message = f"# Welcome to your trial thread, {after.mention}!\n- This thread exists as a way to privately chat with <@&1291413329751048243> about any concerns, suggestions, issues, or comments you might have during your trial.\n- This thread will also be used to provide feedback on your trial 😄\n- You can view the overview of requirements and expectations of your trial here: https://discord.com/channels/1291413329444737096/1294140302663225439/1294142408455487522"
 
-                formatted_message = welcome_message.replace("{mention}", after.mention)
+                formatted_message = self.welcome_message.replace("{mention}", after.mention).replace("\\n", "\n")
                 await thread.send(formatted_message)
 
                 # 2. Send a DM to the user with a link to the thread.
@@ -88,8 +74,7 @@ class TrialManagement(commands.Cog):
                     print(f"Could not DM {after.display_name}. They might have DMs disabled.")
 
                 # Store thread ID persistently
-                trial_threads[str(after.id)] = thread.id
-                save_data()
+                await self.db.set_trial_thread(after.id, thread.id)
 
 
             except Exception as e:
@@ -98,7 +83,8 @@ class TrialManagement(commands.Cog):
         # 4. If the Trial Raider role is removed, delete the thread.
         elif trial_role in before.roles and trial_role not in after.roles:
             print(f"Trial role removed for {after.display_name}")
-            thread_id = trial_threads.get(str(after.id))
+            #thread_id = trial_threads.get(str(after.id))
+            thread_id = await self.db.get_trial_thread(after.id)
             if not thread_id:
                 print("No thread mapping found for", after.display_name)
                 return
@@ -121,9 +107,12 @@ class TrialManagement(commands.Cog):
             except Exception as e:
                 print(f"Error deleting trial thread for {after.display_name}: {e}")
             
-            trial_threads.pop(str(after.id), None)
-            save_data()
+           
+            await self.db.delete_trial_thread(after.id)
 
 async def setup(bot):
+    from db import Database
+    database = Database()
+    await database.connect()
     await bot.add_cog(TrialManagement(bot))
 

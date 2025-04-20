@@ -8,39 +8,11 @@ import asyncio
 import traceback
 
 RAIDER_IO_BASE_URL = "https://raider.io/api/v1/raiding/static-data"
-BOT_DATA_FILE = "bot_data.json"
-
-def save_expansion_id(expansion_id):
-    """Saves the current expansion_id to bot_data.json"""
-    try:
-        # Load existing data
-        if os.path.exists(BOT_DATA_FILE):
-            with open(BOT_DATA_FILE, "r") as file:
-                data = json.load(file)
-        else:
-            data = {}
-
-        # Update the expansion_id
-        data["expansion_id"] = expansion_id
-
-        # Save back to the file
-        with open(BOT_DATA_FILE, "w") as file:
-            json.dump(data, file, indent=4)
-
-    except Exception as e:
-        print(f"Error saving expansion_id: {e}")
-
-def load_expansion_id():
-    """Loads the saved expansion_id from bot_data.json"""
-    if os.path.exists(BOT_DATA_FILE):
-        with open(BOT_DATA_FILE, "r") as file:
-            data = json.load(file)
-            return data.get("expansion_id", None)  # Return None if not found
-    return None
 
 class RaidUpdater(commands.Cog):
-    def __init__(self, bot):
+    def __init__(self, bot, database):
         self.bot = bot
+        self.db = database
 
     @app_commands.command(
         name="updateraids",
@@ -169,7 +141,8 @@ class RaidUpdater(commands.Cog):
                 "Raid channels and threads created successfully!", ephemeral=True
             )
 
-            save_expansion_id(expansion_id)
+
+            await self.db.set_expansion_id(expansion_id)
             await interaction.followup.send(
                 f"Raid channels and threads created successfully! Expansion ID {expansion_id} has been saved.", ephemeral=True
             )
@@ -184,4 +157,7 @@ class RaidUpdater(commands.Cog):
             )
 
 async def setup(bot):
+    from db import Database
+    db = Database()
+    await db.connect()
     await bot.add_cog(RaidUpdater(bot))
