@@ -37,8 +37,6 @@ RUN pip install discord.py
 # Install Playwright browsers
 RUN python -m playwright install --with-deps
 
-RUN pip install asyncpg
-
 # Copy all bot files to the container
 COPY . .
 
