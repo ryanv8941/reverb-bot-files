@@ -193,7 +193,7 @@ class WowAuditSims(commands.Cog):
 
         page.wait_for_selector("text=Boss Summary", timeout=900000)  # Wait up to 15 minutes
         rep_id = page.url.split("/")[-1]
-        send_log(f"✅ {name} - Report ID: {rep_id}")
+        send_log(f"✅ {name} - Report URL: {page.url}")
         print("Result URL:", page.url)
         print()
 
