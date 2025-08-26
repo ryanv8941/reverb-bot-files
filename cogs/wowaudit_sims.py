@@ -8,6 +8,9 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 
+
+
+
 WOW_AUDIT_TOKEN = os.getenv('WOW_AUDIT_TOKEN')
 WOW_AUDIT_URL = 'https://wowaudit.com/v1/characters'
 WOW_AUDIT_UPLOAD_URL = 'https://wowaudit.com/v1/wishlists'
@@ -60,7 +63,7 @@ class WowAuditSims(commands.Cog):
         )
 
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True, args=["--no-sandbox"])
+            browser = p.chromium.launch(headless=False, args=["--no-sandbox"])
             page = browser.new_page()
 
             page.goto("https://www.raidbots.com/auth")
@@ -98,7 +101,7 @@ class WowAuditSims(commands.Cog):
 
         time.sleep(5)
 
-        element = page.locator("text=Liberation of Undermine").first
+        element = page.locator("text=Manaforge Omega").first
         element.scroll_into_view_if_needed()
         element.click()
 
@@ -113,6 +116,8 @@ class WowAuditSims(commands.Cog):
 
         # Click the second option
         page.locator("div[id^='react-select'][id$='-listbox'] div").nth(2).click()
+
+        page.locator("input[name='upgradeEquipped']").check(force=True)
 
         #time.sleep(10)
         page.click("button:has-text('Run Droptimizer')")

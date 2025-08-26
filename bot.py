@@ -11,6 +11,7 @@ TOKEN = os.getenv("DISCORD_TOKEN")
 
 
 
+
 # Set up intents. We need members intent to get role updates.
 intents = discord.Intents.default()
 intents.message_content = True
