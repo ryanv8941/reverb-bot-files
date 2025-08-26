@@ -63,7 +63,7 @@ class WowAuditSims(commands.Cog):
         )
 
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=False, args=["--no-sandbox"])
+            browser = p.chromium.launch(headless=True, args=["--no-sandbox"])
             page = browser.new_page()
 
             page.goto("https://www.raidbots.com/auth")
