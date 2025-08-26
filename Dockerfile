@@ -35,7 +35,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install discord.py
 
 # Install Playwright browsers
-RUN python -m playwright install --with-deps
+RUN python -m playwright install
 
 # Copy all bot files to the container
 COPY . .
