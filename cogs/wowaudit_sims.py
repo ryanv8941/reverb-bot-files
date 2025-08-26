@@ -77,7 +77,7 @@ class WowAuditSims(commands.Cog):
             # Loop through characters and simulate
             for char in char_list:
                 #send_log(f"Starting sim for {char['name']}")
-                result = self.run_droptimizer(page, char["realm"], char["name"], char["id"], send_log)
+                result = self.run_droptimizer(page, char["realm"], char["name"], char["id"], send_log, log_channel)
                 sim_string.append(result)
                 #send_log(f"✅ Sim complete for {char['name']} - Report ID: {result['report_id']}")
 
@@ -88,7 +88,7 @@ class WowAuditSims(commands.Cog):
             self.bot.loop
         )
 
-    def run_droptimizer(self, page, realm, name, id, send_log):
+    def run_droptimizer(self, page, realm, name, id, send_log, log_channel):
         page.goto("https://www.raidbots.com/simbot/droptimizer")
         page.wait_for_load_state("load")
 
@@ -122,12 +122,78 @@ class WowAuditSims(commands.Cog):
         #time.sleep(10)
         page.click("button:has-text('Run Droptimizer')")
 
-        #page.wait_for_selector("text=Job Status: Processing", timeout=15000)
-        send_log(f"✅ {name} simulation queued...")
+        future_msg = asyncio.run_coroutine_threadsafe(
+            log_channel.send(f"Running simulation for {name}: 0%"), self.bot.loop
+        )
+        progress_message = future_msg.result()  # get the Discord message object
+
+        progress_span = page.locator("div.Donut > span").first
+        total_stages = 3
+        current_stage = 0
+        last_overall_progress = -1
+        last_stage_progress = 0
+
+        while True:
+            try:
+
+                #print(f'first try')
+                
+                try:
+                    #print(f'second try')
+                    page.wait_for_selector("text=Boss Summary", timeout=1000)  # 1 second
+                    # If found, break
+                    break
+                except:
+                    pass
+
+                raw_text = progress_span.text_content().strip()  # should return something like '25%'
+                stage_progress = "".join(filter(str.isdigit, raw_text))
+                stage_progress = int(stage_progress) if stage_progress else 0
+
+                if stage_progress < last_stage_progress and current_stage < total_stages - 1:
+                    current_stage += 1
+
+
+                last_stage_progress = stage_progress
+
+                overall_progress = int(((current_stage + stage_progress / 100) / total_stages) * 100)
+
+                if overall_progress != last_overall_progress:
+                    #print(f'if hehe')
+                    last_overall_progress   = overall_progress
+                    emoji = discord.utils.get(self.bot.emojis, name="timerReverb")
+                    asyncio.run_coroutine_threadsafe(
+                        progress_message.edit(content=f"{emoji} Running simulation for {name}: {overall_progress}%"),
+                        self.bot.loop
+                    )
+
+                try:
+                    print(f'second try')
+                    page.wait_for_selector("text=Boss Summary", timeout=1000)  # 1 second
+                    # If found, break
+                    break
+                except:
+                    pass
+
+                        # Break when sim is done
+                if overall_progress > 95:
+                    break
+
+            except Exception as e:
+                print(f"Progress loop error: {e}")
+
+            time.sleep(2)
+
+        # Final edit to show completion
+        asyncio.run_coroutine_threadsafe(
+            progress_message.edit(content=f"✅ Simulation finished for {name}!"),
+            self.bot.loop
+        )
+
 
         page.wait_for_selector("text=Boss Summary", timeout=900000)  # Wait up to 15 minutes
         rep_id = page.url.split("/")[-1]
-        send_log(f"✅ Sim finished for {name} - Report ID: {rep_id}")
+        send_log(f"✅ {name} - Report ID: {rep_id}")
         print("Result URL:", page.url)
         print()
 
