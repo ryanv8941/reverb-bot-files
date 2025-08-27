@@ -17,3 +17,5 @@ services:
       - DB_NAME=${DB_NAME}
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
+      - GOOGLE_SERVICE_ACCOUNT_FILE=${GOOGLE_SA}
+      - GOOGLE_SHEET_ID=${GOOGLE_SHEET_ID}
