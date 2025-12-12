@@ -105,7 +105,7 @@ class WowAuditSims(commands.Cog):
         element.scroll_into_view_if_needed()
         element.click()
 
-        dropdowns = page.locator("div[class*='css-1d8n9bt']")
+        dropdowns = page.locator("div[class*='css-hlgwow']")
         second_dropdown = dropdowns.nth(1)
 
         # Click to open the second dropdown
