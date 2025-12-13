@@ -6,16 +6,13 @@ services:
     build: .
     restart: unless-stopped
     volumes:
-      - ./bot_data.json:/app/bot_data.json  # Persist bot data
+      - /mnt/user/appdata/reverb-bot/bot_data.json:/app/bot_data.json  # Persist bot data
+      - /mnt/user/appdata/reverb-bot/reverb_bot.db:/app/reverb_bot.db  # Persist SQLite database
+      
     environment:
       - DISCORD_TOKEN=${DISCORD_TOKEN} # Store in Unraid instead of hardcoding
       - WOW_AUDIT_TOKEN=${WOW_AUDIT_TOKEN}  # WOW Audit Token
       - RAIDBOTS_EMAIL=${RAIDBOTS_EMAIL}  # Raidbots Email
       - RAIDBOTS_PASSWORD=${RAIDBOTS_PASSWORD}  # Raidbots Password
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
-      - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
       - GOOGLE_SERVICE_ACCOUNT_FILE=${GOOGLE_SA}
       - GOOGLE_SHEET_ID=${GOOGLE_SHEET_ID}
