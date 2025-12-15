@@ -30,7 +30,7 @@ async def on_ready():
 
     try:
         for filename in os.listdir("./cogs"):
-            if filename.endswith(".py") and filename != "trial_management.py" and filename != "raid_updater.py" and filename != "raid_updater_weekly.py" and filename != "upgrade_sheet_sync.py":
+            if filename.endswith(".py") and filename != "gold_gamba.py" and filename != "trial_management.py" and filename != "raid_updater.py" and filename != "raid_updater_weekly.py" and filename != "upgrade_sheet_sync.py":
                 await bot.load_extension(f"cogs.{filename[:-3]}")
     except Exception as l:
         print(f'RYAN EXCEPTON NO FILE: {l}')
@@ -62,6 +62,13 @@ async def on_ready():
         print("Loaded UpgradeSheetSync cog.")
     except Exception as e:
         print(f"Error loading UpgradeSheetSync cog: {e}")
+
+    try:
+        from cogs.gold_gamba import GoldGamba
+        await bot.add_cog(GoldGamba(bot, database))
+        print("Loaded GoldGamba cog with database.")
+    except Exception as e:
+        print(f"Error loading GoldGamba cog: {e}")
 
     try:
         await bot.tree.sync()  # Force sync application commands
