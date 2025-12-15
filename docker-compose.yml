@@ -3,7 +3,8 @@ version: '3.8'
 services:
   reverb-bot:
     container_name: reverb-bot
-    build: .
+    image: ryanv8941/reverb-bot:latest
+    pull_policy: always
     restart: unless-stopped
     volumes:
       - /mnt/user/appdata/reverb-bot/bot_data.json:/app/bot_data.json  # Persist bot data
