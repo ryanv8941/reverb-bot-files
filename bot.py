@@ -5,6 +5,7 @@ import os
 import json
 import db
 from dotenv import load_dotenv
+import sys
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -25,6 +26,7 @@ bot = commands.Bot(command_prefix='!', intents=intents)
 async def on_ready():
     await bot.change_presence(status=discord.Status.online, activity=discord.Game("Managing trials"))
     print(f'Logged in as {bot.user} (ID: {bot.user.id})')
+    sys.stdout.flush()
 
     database = db.Database()
     await database.connect()
@@ -35,13 +37,16 @@ async def on_ready():
                 await bot.load_extension(f"cogs.{filename[:-3]}")
     except Exception as l:
         print(f'RYAN EXCEPTON NO FILE: {l}')
+        sys.stdout.flush()
 
     try:
         from cogs.trial_management import TrialManagement
         await bot.add_cog(TrialManagement(bot, database))
         print("Loaded TrialManagement cog with database.")
+        sys.stdout.flush()
     except Exception as e:
         print(f"Error loading TrialManagement cog: {e}")
+        sys.stdout.flush()
 
     try:
         from cogs.raid_updater import RaidUpdater
@@ -49,34 +54,43 @@ async def on_ready():
         print("Loaded RaidUpdater cog with database.")
     except Exception as e:
         print(f"Error loading RaidUpdater cog: {e}")
+        sys.stdout.flush()
 
     try:
         from cogs.raid_updater_weekly import WeeklyRaidUpdater
         await bot.add_cog(WeeklyRaidUpdater(bot, database))
         print("Loaded RaidUpdaterWeekly cog with database.")
+        sys.stdout.flush()
     except Exception as e:
         print(f"Error loading RaidUpdaterWeekly cog: {e}")
+        sys.stdout.flush()
 # Load UpgradeSheetSync cog after WeeklyRaidUpdater
     try:
         from cogs.upgrade_sheet_sync import UpgradeSheetSync
         await bot.add_cog(UpgradeSheetSync(bot))
         print("Loaded UpgradeSheetSync cog.")
+        sys.stdout.flush()
     except Exception as e:
         print(f"Error loading UpgradeSheetSync cog: {e}")
+        sys.stdout.flush()
 
     try:
         from cogs.gold_gamba import GoldGamba
         await bot.add_cog(GoldGamba(bot, database))
         print("Loaded GoldGamba cog with database.")
+        sys.stdout.flush()
     except Exception as e:
         print(f"Error loading GoldGamba cog: {e}")
+        sys.stdout.flush()
 
     try:
         from cogs.lottery_task import Lottery
         await bot.add_cog(Lottery(bot, database))
         print("Loaded Lottery cog with database.")
+        sys.stdout.flush()
     except Exception as e:
         print(f"Error loading Lottery cog: {e}")
+        sys.stdout.flush()
 
     try:
         await bot.tree.sync()  # Force sync application commands
