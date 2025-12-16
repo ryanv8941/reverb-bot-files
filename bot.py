@@ -1,3 +1,4 @@
+from re import L
 import discord
 from discord.ext import commands
 import os
@@ -69,6 +70,13 @@ async def on_ready():
         print("Loaded GoldGamba cog with database.")
     except Exception as e:
         print(f"Error loading GoldGamba cog: {e}")
+
+    try:
+        from cogs.lottery_task import Lottery
+        await bot.add_cog(Lottery(bot, database))
+        print("Loaded Lottery cog with database.")
+    except Exception as e:
+        print(f"Error loading Lottery cog: {e}")
 
     try:
         await bot.tree.sync()  # Force sync application commands
