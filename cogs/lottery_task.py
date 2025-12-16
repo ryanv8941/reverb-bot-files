@@ -56,7 +56,7 @@ class Lottery(commands.Cog):
             mod_log_channel = discord.utils.get(guild.text_channels, name="mod-logs")
             if mod_log_channel:
                 await mod_log_channel.send(
-                    f"💰 {interaction.user.mention} bought {amount} lottery ticket(s) for Lottery #{active_lottery["lottery_number"]} "
+                    f"💰 {interaction.user.mention} bought {amount} lottery ticket(s) for Lottery #{active_lottery['lottery_number']} "
                     f"for {total_cost:,}g. New balance: {new_balance:,}g."
                 )
 
