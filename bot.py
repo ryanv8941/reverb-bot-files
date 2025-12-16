@@ -31,7 +31,7 @@ async def on_ready():
 
     try:
         for filename in os.listdir("./cogs"):
-            if filename.endswith(".py") and filename != "gold_gamba.py" and filename != "trial_management.py" and filename != "raid_updater.py" and filename != "raid_updater_weekly.py" and filename != "upgrade_sheet_sync.py":
+            if filename.endswith(".py") and filename != "lottery_task.py" and filename != "gold_gamba.py" and filename != "trial_management.py" and filename != "raid_updater.py" and filename != "raid_updater_weekly.py" and filename != "upgrade_sheet_sync.py":
                 await bot.load_extension(f"cogs.{filename[:-3]}")
     except Exception as l:
         print(f'RYAN EXCEPTON NO FILE: {l}')
