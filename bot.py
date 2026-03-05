@@ -56,14 +56,6 @@ async def on_ready():
         print(f"Error loading RaidUpdater cog: {e}")
         sys.stdout.flush()
 
-    try:
-        from cogs.raid_updater_weekly import WeeklyRaidUpdater
-        await bot.add_cog(WeeklyRaidUpdater(bot, database))
-        print("Loaded RaidUpdaterWeekly cog with database.")
-        sys.stdout.flush()
-    except Exception as e:
-        print(f"Error loading RaidUpdaterWeekly cog: {e}")
-        sys.stdout.flush()
 # Load UpgradeSheetSync cog after WeeklyRaidUpdater
     try:
         from cogs.upgrade_sheet_sync import UpgradeSheetSync
