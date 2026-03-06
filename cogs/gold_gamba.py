@@ -81,7 +81,7 @@ class GoldGamba(commands.Cog):
     async def coinflip(
         self,
         interaction: discord.Interaction,
-        wager: int,
+        wager: app_commands.Range[int, 1, 50000],
         guess: app_commands.Choice[str]
     ):
     
