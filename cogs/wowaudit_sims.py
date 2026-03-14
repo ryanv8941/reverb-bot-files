@@ -29,7 +29,16 @@ class WowAuditSims(commands.Cog):
 
     @app_commands.command(name="runsims", description="runs sims for every team member and uploads to wowaudit wishlist")  # Use app_commands
     @app_commands.checks.has_permissions(administrator=True)  # Check for admin permissions
-    async def run_sims(self, interaction: discord.Interaction):
+    @app_commands.choices(difficulty=[
+        app_commands.Choice(name="Heroic", value="Heroic"),
+        app_commands.Choice(name="Mythic", value="Mythic")
+    ])
+    async def run_sims(
+            self,  
+            interaction: discord.Interaction,
+            difficulty: str,
+            raid_name: str):
+        
         if not interaction.user.guild_permissions.administrator:
             await interaction.response.send_message("You do not have permission to use this command.", ephemeral=True)
             return
@@ -50,10 +59,10 @@ class WowAuditSims(commands.Cog):
         log_channel = interaction.channel
 
         loop = asyncio.get_event_loop()
-        await loop.run_in_executor(None, self.start_process, filtered_characters, log_channel)
+        await loop.run_in_executor(None, self.start_process, filtered_characters, log_channel, difficulty, raid_name)
 
     
-    def start_process(self, char_list, log_channel):
+    def start_process(self, char_list, log_channel, difficulty, raid_name):
         def send_log(msg):
             asyncio.run_coroutine_threadsafe(log_channel.send(msg), self.bot.loop)
         
@@ -63,7 +72,7 @@ class WowAuditSims(commands.Cog):
         )
 
         with sync_playwright() as p:
-            browser = p.chromium.launch(headless=True, args=["--no-sandbox"])
+            browser = p.chromium.launch(headless=False, args=["--no-sandbox"])
             page = browser.new_page()
 
             page.goto("https://www.raidbots.com/auth")
@@ -77,7 +86,7 @@ class WowAuditSims(commands.Cog):
             # Loop through characters and simulate
             for char in char_list:
                 #send_log(f"Starting sim for {char['name']}")
-                result = self.run_droptimizer(page, char["realm"], char["name"], char["id"], send_log, log_channel)
+                result = self.run_droptimizer(page, char["realm"], char["name"], char["id"], send_log, log_channel, difficulty, raid_name)
                 sim_string.append(result)
                 #send_log(f"✅ Sim complete for {char['name']} - Report ID: {result['report_id']}")
 
@@ -88,7 +97,7 @@ class WowAuditSims(commands.Cog):
             self.bot.loop
         )
 
-    def run_droptimizer(self, page, realm, name, id, send_log, log_channel):
+    def run_droptimizer(self, page, realm, name, id, send_log, log_channel, diff, raid_name):
         page.goto("https://www.raidbots.com/simbot/droptimizer")
         page.wait_for_load_state("load")
 
@@ -101,9 +110,14 @@ class WowAuditSims(commands.Cog):
 
         time.sleep(5)
 
-        element = page.locator("text=Manaforge Omega").first
+        element = page.locator("text=" + raid_name).first
         element.scroll_into_view_if_needed()
         element.click()
+
+        if diff == "Heroic":
+            element = page.locator("text=" + diff).first
+            element.scroll_into_view_if_needed()
+            element.click()
 
         dropdowns = page.locator("div[class*='css-hlgwow']")
         second_dropdown = dropdowns.nth(1)
