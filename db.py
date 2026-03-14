@@ -5,7 +5,7 @@ from datetime import timezone
 import random
 
 class Database:
-    def __init__(self, db_path: str = "/app/reverb_bot.db"):
+    def __init__(self, db_path: str = "/app/reverb_bot.db"): #/app/reverb_bot.db change to reverb_bot.db for local testing
         self.db_path = db_path
         self.conn = None
 
