@@ -47,13 +47,13 @@ class WowAuditSims(commands.Cog):
         # Handle the response
         if response.status_code == 200:
             characters = response.json()
-            #print(f'JSON HERE ----> {characters}')
+            print(f'JSON HERE UNFILTERED ----> {characters}')
         else:
             print(f"Failed to retrieve data. Status code: {response.status_code}")
             print(response.text)
         # Filter out characters with role 'healer'
         filtered_characters = [char for char in characters if char.get("role") != "Heal"]
-        print(f'JSON HERE ----> {filtered_characters}')
+        print(f'JSON HERE FILTERED ----> {filtered_characters}')
 
 
         log_channel = interaction.channel
@@ -118,12 +118,18 @@ class WowAuditSims(commands.Cog):
             element = page.locator("text=" + diff).first
             element.scroll_into_view_if_needed()
             element.click()
+        
+        elif diff == "Mythic":
+            element = page.locator("text=" + diff).nth(1)
+            element.scroll_into_view_if_needed()
+            element.click()
 
         dropdowns = page.locator("div[class*='css-hlgwow']")
         second_dropdown = dropdowns.nth(1)
 
         # Click to open the second dropdown
         second_dropdown.click()
+
 
         # Wait for the options to appear
         page.wait_for_selector("div[id^='react-select'][id$='-listbox'] div", timeout=5000)
